@@ -1,4 +1,4 @@
-// ...existing code...
+
 # NECX Messaging Backend
 
 Simple Express + MongoDB backend for a messaging app.

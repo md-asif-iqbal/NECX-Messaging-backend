@@ -1,7 +1,7 @@
 
 # NECX Messaging Backend
 
-Simple Express + MongoDB backend for a messaging app.
+Express + MongoDB backend for a messaging app.
 
 ## Project layout
 - [server.js](server.js) — app bootstrap, middleware and route mounting

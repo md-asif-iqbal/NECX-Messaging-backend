@@ -5,6 +5,7 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import compression from "compression";
+import serverless from "serverless-http";
 
 import { connectDB } from "./db.js";
 import messages from "./routes/messages.js";
@@ -35,16 +36,26 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
 
-// Start
-const start = async () => {
-  await connectDB(process.env.MONGO_URI);
-  app.listen(PORT, () => console.log(`🚀 API listening on :${PORT}`));
-};
+// Serverless handler (Vercel) and local server
+const dbPromise = connectDB(process.env.MONGO_URI);
+const serverlessHandler = serverless(app);
 
-start().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+export default async function handler(req, res) {
+  await dbPromise; // ensure DB is ready before handling requests
+  return serverlessHandler(req, res);
+}
+
+// Only listen locally when not running on Vercel
+if (!process.env.VERCEL) {
+  dbPromise
+    .then(() => {
+      app.listen(PORT, () => console.log(`🚀 API listening on :${PORT}`));
+    })
+    .catch((e) => {
+      console.error(e);
+      process.exit(1);
+    });
+}
 
 // import express from 'express';
 // import cors from 'cors';
